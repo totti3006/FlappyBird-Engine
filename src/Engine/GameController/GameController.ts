@@ -1,4 +1,4 @@
-import EventHandler from "../Events/EventHandler";
+import EventHandler from "../EventHandler/EventHandler";
 import Renderer from "../Renderer/renderer";
 import Scene from "../Scene";
 import { sleep } from "../Math/Sleep";
@@ -40,7 +40,6 @@ class GameController {
   }
 
   public start(): void {
-    // this.eventHandler.handle();
     this.rAF_ID = requestAnimationFrame(() => this.gameLoop());
   }
 
@@ -49,13 +48,11 @@ class GameController {
     const delta: number = time - this.lastTime;
     this.lastTime = time;
 
-    console.log(delta);
     // event handle
-
+    this.eventHandler.handle();
     // update
     this.scene!.update(delta);
     // render
-    // console.log(this.scene!.getAllVisibleObject());
     this.renderer.drawAll(this.scene!.getAllVisibleObject());
 
     // sleep

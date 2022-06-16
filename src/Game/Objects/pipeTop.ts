@@ -1,9 +1,9 @@
 import Sprite from "../../Engine/GameObjects/Sprite";
-import Vector2D from "../../Engine/Math/Vector2D";
 import LoadImg from "../LoadImg";
 import * as setting from "../settings";
 
 class PipeTop extends Sprite {
+  private passed: boolean = false;
   constructor() {
     super();
     let image = LoadImg.getInstance().getImg(setting.PIPE_TOP)!;
@@ -18,6 +18,14 @@ class PipeTop extends Sprite {
 
   public stop(): void {
     this.setVelocity(0, 0);
+  }
+
+  public isPassed(): boolean {
+    return this.passed;
+  }
+
+  public setPassed(v: boolean): void {
+    this.passed = v;
   }
 }
 

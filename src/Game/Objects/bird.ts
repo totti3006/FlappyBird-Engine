@@ -1,9 +1,9 @@
 import Sprite from "../../Engine/GameObjects/Sprite";
-import Vector2D from "../../Engine/Math/Vector2D";
 import LoadImg from "../LoadImg";
 import * as setting from "../settings";
 
 class Bird extends Sprite {
+  private freeFalling: boolean = false;
   constructor() {
     super();
 
@@ -20,28 +20,51 @@ class Bird extends Sprite {
     this.setPosition(setting.WIDTH / 3, setting.HEIGHT / 2);
   }
 
-  public jump(): void {
+  public jump = (): void => {
     this.setVelocity(0, -350);
     this.setForce(0, 1200);
+    this.setFreeFalling(false);
 
     this.animation!.setAnimationFrame(5);
 
-    if (this.getAngle() > -20) this.animation?.setDeltaDegree(-30); // rotate up
+    this.animation?.setDeltaDegree(-30); // rotate up
+  };
+
+  private isFreeFalling(): boolean {
+    return this.freeFalling;
   }
 
-  public fall(): void {
-    if (this.getVelocity().y > 400) {
-      this.setVelocity(0, 400);
-      this.setForce(0, 0);
-      this.animation?.setDeltaDegree(25); // rotate down
-      this.animation!.setAnimationFrame(0);
-    }
+  private setFreeFalling(v: boolean): void {
+    this.freeFalling = v;
+  }
 
+  private setFall(): void {
+    this.setVelocity(0, 400);
+    this.setForce(0, 0);
+    this.animation?.setDeltaDegree(25); // rotate down
+    this.animation!.setAnimationFrame(0);
+  }
+
+  public handleFall(): void {
+    if (this.isFreeFalling()) {
+      this.adjustRotateDown();
+    } else {
+      if (this.getVelocity().y > 400) {
+        this.setFreeFalling(true);
+        this.setFall();
+      }
+      this.adjustRotateUp();
+    }
+  }
+
+  private adjustRotateUp(): void {
     if (this.getAngle() < -20) {
       this.setAngle(-20);
       this.animation?.setDeltaDegree(0);
     }
+  }
 
+  private adjustRotateDown(): void {
     if (this.getAngle() >= 90) {
       this.setAngle(90);
       this.animation?.setDeltaDegree(0);
