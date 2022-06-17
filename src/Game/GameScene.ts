@@ -1,7 +1,7 @@
-import EventHandler from "../Engine/EventHandler/EventHandler";
+// import EventHandler from "../Engine/EventHandler/EventHandler";
+import InputHandler from "../Engine/EventHandler/InputHandler";
 import Scene from "../Engine/Scene";
 import GameController from "../Engine/GameController/GameController";
-import Sprite from "../Engine/GameObjects/Sprite";
 import * as setting from "./settings";
 import Background from "./Objects/background";
 import Bird from "./Objects/bird";
@@ -13,6 +13,11 @@ import Title from "./Objects/title";
 import GameOver from "./Objects/gameOver";
 import HighScore from "./Objects/highScore";
 import Message from "./Objects/message";
+import StartCommand from "./Commands/StartCommand";
+import JumpCommand from "./Commands/JumpCommand";
+import PauseCommand from "./Commands/PauseCommand";
+import ResumeCommand from "./Commands/ResumeCommand";
+import ResetCommand from "./Commands/ResetCommand";
 
 enum GameState {
   Ready = 0,
@@ -42,6 +47,12 @@ class GameScene extends Scene {
   private static highScore: number = 0;
   private score: number = 0;
 
+  private startCommand: StartCommand;
+  private jumbCommand: JumpCommand;
+  private pauseCommand: PauseCommand;
+  private resumeCommand: ResumeCommand;
+  private resetCommand: ResetCommand;
+
   constructor() {
     super();
     this.background = new Background();
@@ -56,6 +67,13 @@ class GameScene extends Scene {
 
     this.score_right = [];
     this.score_left = [];
+
+    this.startCommand = new StartCommand(this);
+    this.jumbCommand = new JumpCommand(this.bird);
+    this.pauseCommand = new PauseCommand(this);
+    this.resumeCommand = new ResumeCommand(this);
+    this.resetCommand = new ResetCommand(this);
+
     for (let i = 0; i < 10; i++) {
       this.score_right.push(new Score(`${i}`));
       this.score_left.push(new Score(`${i}`));
@@ -76,7 +94,8 @@ class GameScene extends Scene {
     this.addObject(this.topScore, 18);
     this.addObject(this.message, 18);
 
-    EventHandler.addEventListener("keydown", this.start, "Space");
+    // EventHandler.addEventListener("keydown", this.start, "Space");
+    InputHandler.addEventListener(this.startCommand, "Space");
   }
 
   public update(dt: number): void {
@@ -105,10 +124,13 @@ class GameScene extends Scene {
     }
   }
 
-  private start = (): void => {
-    EventHandler.removeEventListener("keydown", this.start, "Space");
-    EventHandler.addEventListener("keydown", this.bird.jump, "Space");
-    EventHandler.addEventListener("keydown", this.pause, "KeyP");
+  public start = (): void => {
+    // EventHandler.removeEventListener("keydown", this.start, "Space");
+    // EventHandler.addEventListener("keydown", this.bird.jump, "Space");
+    // EventHandler.addEventListener("keydown", this.pause, "KeyP");
+    InputHandler.removeEventListener(this.startCommand, "Space");
+    InputHandler.addEventListener(this.jumbCommand, "Space");
+    InputHandler.addEventListener(this.pauseCommand, "KeyP");
     this.state = GameState.Playing;
     this.bird.jump();
     this.score_right[0].setVisibility(true);
@@ -128,7 +150,8 @@ class GameScene extends Scene {
     this.message.setVisibility(true);
 
     this.state = GameState.EndGame;
-    EventHandler.addEventListener("keydown", this.reset, "Enter");
+    // EventHandler.addEventListener("keydown", this.reset, "Enter");
+    InputHandler.addEventListener(this.resetCommand, "Enter");
   }
 
   private checkCollision(): void {
@@ -144,8 +167,10 @@ class GameScene extends Scene {
               item[1].getPosition().y)) ||
         this.bird.getPosition().y >= 400
       ) {
-        EventHandler.removeEventListener("keydown", this.bird.jump, "Space");
-        EventHandler.removeEventListener("keydown", this.pause, "KeyP");
+        // EventHandler.removeEventListener("keydown", this.bird.jump, "Space");
+        // EventHandler.removeEventListener("keydown", this.pause, "KeyP");
+        InputHandler.removeEventListener(this.jumbCommand, "Space");
+        InputHandler.removeEventListener(this.pauseCommand, "KeyP");
         this.state = GameState.Dying;
         this.bird.hit();
         this.ground.stop();
@@ -213,9 +238,9 @@ class GameScene extends Scene {
     }
   }
 
-  private pause = (): void => {
-    // EventHandler.removeEventListener("keydown", this.bird.jump, "Space");
-    EventHandler.addEventListener("keydown", this.resume, "Space");
+  public pause = (): void => {
+    // EventHandler.addEventListener("keydown", this.resume, "Space");
+    InputHandler.addEventListener(this.resumeCommand, "Space");
     this.state = GameState.Pausing;
     this.bird.pause();
     this.ground.pause();
@@ -225,9 +250,10 @@ class GameScene extends Scene {
     });
   };
 
-  private resume = (): void => {
-    EventHandler.removeEventListener("keydown", this.resume, "Space");
-    // EventHandler.addEventListener("keydown", this.bird.jump, "Space");
+  public resume = (): void => {
+    // EventHandler.removeEventListener("keydown", this.resume, "Space");
+    InputHandler.removeEventListener(this.resumeCommand, "Space");
+
     this.state = GameState.Playing;
     this.bird.resume();
     this.ground.resume();
@@ -237,8 +263,9 @@ class GameScene extends Scene {
     });
   };
 
-  private reset = (): void => {
-    EventHandler.removeEventListener("keydown", this.reset, "Enter");
+  public reset = (): void => {
+    // EventHandler.removeEventListener("keydown", this.reset, "Enter");
+    InputHandler.removeEventListener(this.resetCommand, "Enter");
     this.controller.runWithScene(new GameScene());
   };
 }

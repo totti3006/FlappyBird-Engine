@@ -1,4 +1,5 @@
-import EventHandler from "../EventHandler/EventHandler";
+// import EventHandler from "../EventHandler/EventHandler";
+import InputHandler from "../EventHandler/InputHandler";
 import Renderer from "../Renderer/renderer";
 import Scene from "../Scene";
 import { sleep } from "../Math/Sleep";
@@ -10,7 +11,7 @@ class GameController {
 
   private renderer: Renderer;
 
-  private eventHandler: EventHandler;
+  private eventHandler: InputHandler;
 
   private scene: Scene | null = null;
 
@@ -20,7 +21,7 @@ class GameController {
   private constructor() {
     this.canvas = document.getElementById("maingame") as HTMLCanvasElement;
     this.renderer = Renderer.getInstance();
-    this.eventHandler = EventHandler.getInstance();
+    this.eventHandler = InputHandler.getInstance();
     this.lastTime = window.performance.now();
   }
 
@@ -49,7 +50,7 @@ class GameController {
     this.lastTime = time;
 
     // event handle
-    this.eventHandler.handle();
+    this.eventHandler.processInput();
     // update
     this.scene!.update(delta);
     // render
