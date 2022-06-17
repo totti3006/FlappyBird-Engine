@@ -22,6 +22,13 @@ class Ground extends Sprite {
     }
     super.update(dt);
   }
+
+  public pause = (): void => {
+    this.setVelocity(0, 0);
+  };
+  public resume = (): void => {
+    this.setVelocity(-setting.GAME_SPEED, 0);
+  };
 }
 
 export default Ground;

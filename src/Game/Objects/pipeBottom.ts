@@ -18,6 +18,13 @@ class PipeBottom extends Sprite {
   public stop(): void {
     this.setVelocity(0, 0);
   }
+
+  public pause = (): void => {
+    this.setVelocity(0, 0);
+  };
+  public resume = (): void => {
+    this.setVelocity(-setting.GAME_SPEED, 0);
+  };
 }
 
 export default PipeBottom;

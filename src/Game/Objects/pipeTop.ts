@@ -27,6 +27,13 @@ class PipeTop extends Sprite {
   public setPassed(v: boolean): void {
     this.passed = v;
   }
+
+  public pause = (): void => {
+    this.setVelocity(0, 0);
+  };
+  public resume = (): void => {
+    this.setVelocity(-setting.GAME_SPEED, 0);
+  };
 }
 
 export default PipeTop;

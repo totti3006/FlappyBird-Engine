@@ -50,6 +50,10 @@ class GameAnimation {
     this.deltaDegree = degree;
   }
 
+  public getDeltaDegree(): number {
+    return this.deltaDegree;
+  }
+
   public updateRotateAngle(): number {
     if (this.rotateFrame > 0) {
       this.countRotate++;

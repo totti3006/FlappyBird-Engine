@@ -4,6 +4,9 @@ import * as setting from "../settings";
 
 class Bird extends Sprite {
   private freeFalling: boolean = false;
+  private pauseVelocity: number = 0;
+  private pauseDeltaAngle: number = 0;
+
   constructor() {
     super();
 
@@ -85,6 +88,21 @@ class Bird extends Sprite {
     this.updateAnimation();
     super.update(dt);
   }
+
+  public pause = (): void => {
+    this.pauseVelocity = this.getVelocity().y;
+    this.setVelocity(0, 0);
+    this.setForce(0, 0);
+    this.animation!.setAnimationFrame(0);
+    this.pauseDeltaAngle = this.animation!.getDeltaDegree();
+    this.animation?.setDeltaDegree(0);
+  };
+  public resume = (): void => {
+    this.setVelocity(0, this.pauseVelocity);
+    this.setForce(0, 1200);
+    this.animation!.setAnimationFrame(5);
+    this.animation?.setDeltaDegree(this.pauseDeltaAngle);
+  };
 }
 
 export default Bird;

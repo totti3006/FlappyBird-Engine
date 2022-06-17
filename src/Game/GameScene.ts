@@ -17,6 +17,7 @@ import Message from "./Objects/message";
 enum GameState {
   Ready = 0,
   Playing,
+  Pausing,
   Dying,
   EndGame,
 }
@@ -94,6 +95,7 @@ class GameScene extends Scene {
       }
 
       this.bird.handleFall();
+    } else if (this.state == GameState.Pausing) {
     } else if (this.state == GameState.Dying) {
       this.bird.handleFall();
       if (this.bird.getPosition().y >= 400) {
@@ -106,6 +108,7 @@ class GameScene extends Scene {
   private start = (): void => {
     EventHandler.removeEventListener("keydown", this.start, "Space");
     EventHandler.addEventListener("keydown", this.bird.jump, "Space");
+    EventHandler.addEventListener("keydown", this.pause, "KeyP");
     this.state = GameState.Playing;
     this.bird.jump();
     this.score_right[0].setVisibility(true);
@@ -142,6 +145,7 @@ class GameScene extends Scene {
         this.bird.getPosition().y >= 400
       ) {
         EventHandler.removeEventListener("keydown", this.bird.jump, "Space");
+        EventHandler.removeEventListener("keydown", this.pause, "KeyP");
         this.state = GameState.Dying;
         this.bird.hit();
         this.ground.stop();
@@ -208,6 +212,30 @@ class GameScene extends Scene {
       }
     }
   }
+
+  private pause = (): void => {
+    // EventHandler.removeEventListener("keydown", this.bird.jump, "Space");
+    EventHandler.addEventListener("keydown", this.resume, "Space");
+    this.state = GameState.Pausing;
+    this.bird.pause();
+    this.ground.pause();
+    this.pipes.forEach((item) => {
+      item[0].pause();
+      item[1].pause();
+    });
+  };
+
+  private resume = (): void => {
+    EventHandler.removeEventListener("keydown", this.resume, "Space");
+    // EventHandler.addEventListener("keydown", this.bird.jump, "Space");
+    this.state = GameState.Playing;
+    this.bird.resume();
+    this.ground.resume();
+    this.pipes.forEach((item) => {
+      item[0].resume();
+      item[1].resume();
+    });
+  };
 
   private reset = (): void => {
     EventHandler.removeEventListener("keydown", this.reset, "Enter");
